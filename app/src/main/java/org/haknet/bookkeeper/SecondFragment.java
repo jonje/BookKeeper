@@ -49,6 +49,11 @@ public class SecondFragment extends Fragment {
 
         });
 
+        binding.cancelButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(this).popBackStack();
+
+        });
+
     }
 
     @Override

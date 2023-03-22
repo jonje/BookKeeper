@@ -13,4 +13,5 @@
     <string name="book_name">Book Name</string>
     <string name="save">Save</string>
     <string name="add_button">Add button</string>
+    <string name="button">Button</string>
 </resources>
