@@ -8,13 +8,14 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.haknet.bookkeeper.databinding.FragmentFirstBinding;
+import org.haknet.bookkeeper.db.entity.BookEntity;
 
-public class FirstFragment extends Fragment {
+public class FirstFragment extends Fragment implements BookListAdapter.OnDeleteClickListener {
 
     private FragmentFirstBinding binding;
     private BookViewModel bookViewModel;
@@ -36,15 +37,17 @@ public class FirstFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        BookListAdapter bookListAdapter = new BookListAdapter(this.getContext());
+        BookListAdapter bookListAdapter = new BookListAdapter(this.getContext(), this);
         RecyclerView recyclerView = binding.bookList;
         recyclerView.setAdapter(bookListAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-        this.bookViewModel.getAllBooks().observe(this.getViewLifecycleOwner(), bookEntities -> {
-            bookListAdapter.setBooks(bookEntities);
+
+        this.bookViewModel.getAllBooks().observe(this.getViewLifecycleOwner(), bookListAdapter::setBooks);
+
+        binding.fab.setOnClickListener(view1 -> {
+            FirstFragmentDirections.ActionFirstFragmentToSecondFragment action = FirstFragmentDirections.actionFirstFragmentToSecondFragment(null);
+            Navigation.findNavController(view).navigate(action);
         });
-        binding.fab.setOnClickListener(view1 -> NavHostFragment.findNavController(FirstFragment.this)
-                .navigate(R.id.action_FirstFragment_to_SecondFragment));
     }
 
     @Override
@@ -53,4 +56,9 @@ public class FirstFragment extends Fragment {
         binding = null;
     }
 
+    @Override
+    public void onClickListener(BookEntity book) {
+        this.bookViewModel.deleteBook(book);
+
+    }
 }

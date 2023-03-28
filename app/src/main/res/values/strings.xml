@@ -16,4 +16,5 @@
     <string name="button">Button</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
 </resources>

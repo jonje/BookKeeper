@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -36,14 +37,38 @@ public class SecondFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        binding.bookSaveButton.setOnClickListener(v -> {
-            String id = UUID.randomUUID().toString();
+
+        String id = SecondFragmentArgs.fromBundle(getArguments()).getId();
+        final boolean isNewBook = id == null;
+
+        final String buttonName;
+        if (!isNewBook) {
+            this.bookViewModel.getBookById(id).observe(this.getViewLifecycleOwner(),bookEntity -> {
+                binding.authorName.setText(bookEntity.getAuthor());
+                binding.bookName.setText(bookEntity.getBook());
+            });
+            buttonName = "Update";
+        } else {
+            buttonName = "Save";
+            id = UUID.randomUUID().toString();
+        }
+
+        Button saveButton = binding.bookSaveButton;
+        saveButton.setText(buttonName);
+        String finalId = id;
+        saveButton.setOnClickListener(v -> {
+
             String authorName = binding.authorName.getText().toString();
             String bookName = binding.bookName.getText().toString();
 
-            BookEntity bookEntity = new BookEntity(id, authorName, bookName);
-            Log.i(TAG, "Inserting book into database");
-            bookViewModel.insert(bookEntity);
+            BookEntity bookEntity = new BookEntity(finalId, authorName, bookName);
+            if (isNewBook) {
+                Log.i(TAG, "Inserting book into database");
+                bookViewModel.insert(bookEntity);
+            } else {
+                Log.i(TAG, "Updating book in database");
+                bookViewModel.update(bookEntity);
+            }
 
             NavHostFragment.findNavController(this).popBackStack();
 

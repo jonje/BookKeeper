@@ -30,7 +30,21 @@ public class BookViewModel extends AndroidViewModel {
         executorService.execute(() -> bookDao.insert(bookEntity));
     }
 
+    public LiveData<BookEntity> getBookById(String id) {
+        return bookDao.getBookById(id);
+    }
+
     public LiveData<List<BookEntity>> getAllBooks() {
         return this.allBooks;
+    }
+
+    public void update(BookEntity bookEntity) {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(() -> bookDao.updateBook(bookEntity));
+    }
+
+    public void deleteBook(BookEntity book) {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(() -> bookDao.deleteBook(book));
     }
 }
